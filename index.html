@@ -1,47 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>EyePlay – Vision Fun!</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EyePlay Dot Chase</title>
   <style>
     body {
+      margin: 0;
+      overflow: hidden;
+      background: linear-gradient(to right, #dbeafe, #fef9c3);
       font-family: 'Segoe UI', sans-serif;
-      background: #e0f7fa;
       text-align: center;
-      padding: 50px;
+    }
+    #start-btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px 40px;
+      font-size: 24px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
     }
     #dot {
-      width: 50px;
-      height: 50px;
-      background: red;
+      width: 40px;
+      height: 40px;
+      background-color: red;
       border-radius: 50%;
       position: absolute;
+      display: none;
+    }
+    #message {
+      position: absolute;
+      top: 10px;
+      width: 100%;
+      text-align: center;
+      font-size: 24px;
+      color: #333;
     }
   </style>
 </head>
 <body>
-  <h1>Follow the Dot!</h1>
-  <p>Try moving your eyes to follow the dot for 30 seconds!</p>
+  <div id="message">Follow the red dot with your eyes!</div>
+  <button id="start-btn">Start Exercise</button>
   <div id="dot"></div>
 
   <script>
     const dot = document.getElementById('dot');
+    const startBtn = document.getElementById('start-btn');
+    const message = document.getElementById('message');
+
     let time = 0;
+    let interval;
 
     function moveDot() {
-      const x = Math.random() * (window.innerWidth - 50);
-      const y = Math.random() * (window.innerHeight - 50);
+      const x = Math.random() * (window.innerWidth - 40);
+      const y = Math.random() * (window.innerHeight - 40);
       dot.style.left = `${x}px`;
       dot.style.top = `${y}px`;
     }
 
-    setInterval(() => {
-      moveDot();
-      time += 1;
-      if (time > 30) {
-        alert("Good job! Your eyes got a workout!");
-        time = 0;
-      }
-    }, 1000);
+    function startGame() {
+      dot.style.display = 'block';
+      startBtn.style.display = 'none';
+      message.textContent = 'Great! Keep following the dot...';
+      time = 0;
+
+      interval = setInterval(() => {
+        moveDot();
+        time++;
+        if (time >= 30) {
+          clearInterval(interval);
+          dot.style.display = 'none';
+          message.textContent = 'Great job! Your eyes got a workout!';
+          startBtn.textContent = 'Play Again';
+          startBtn.style.display = 'block';
+        }
+      }, 1000);
+    }
+
+    startBtn.addEventListener('click', startGame);
   </script>
 </body>
 </html>
