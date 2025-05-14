@@ -1,10 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EyePlay Dot Chase Challenges</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: linear-gradient(to right, #dbeafe, #fef9c3);
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+    }
+    #menu, #message, #dot, #reward, #nav-buttons {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      font-size: 24px;
+      z-index: 1;
+    }
+    #menu button, #nav-buttons button {
+      padding: 15px 30px;
+      margin: 10px;
+      font-size: 20px;
+      border-radius: 10px;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+    #dot {
+      width: 40px;
+      height: 40px;
+      background-color: red;
+      border-radius: 50%;
+      display: none;
+    }
+    #reward {
+      top: 35%;
+      font-size: 28px;
+      color: #333;
+      display: none;
+    }
+    #message {
+      top: 10px;
+      font-size: 22px;
+      color: #444;
+    }
+    #nav-buttons {
+      bottom: 30px;
+      display: none;
+    }
+  </style>
 </head>
 <body>
   <div id="menu">
@@ -16,10 +63,106 @@
     <button onclick="startChallenge('blink')">🌟 Blink Burst</button>
     <button onclick="startChallenge('focus')">👃 Focus Shift</button>
   </div>
+
   <div id="message"></div>
   <div id="reward"></div>
+  <div id="nav-buttons">
+    <button onclick="showMenu()">⬅️ Back to Menu</button>
+    <button onclick="nextChallenge()">➡️ Next Challenge</button>
+  </div>
   <div id="dot"></div>
-  <audio id="reward-sound" src="assets/success.mp3" preload="auto"></audio>
-  <script src="script.js"></script>
+
+  <script>
+    const dot = document.getElementById('dot');
+    const menu = document.getElementById('menu');
+    const message = document.getElementById('message');
+    const reward = document.getElementById('reward');
+    const navButtons = document.getElementById('nav-buttons');
+
+    let timer = 0;
+    let interval;
+    let angle = 0;
+    let currentChallengeIndex = 0;
+
+    const challenges = ['vertical', 'horizontal', 'circle', 'blink', 'focus'];
+
+    function startChallenge(type) {
+      currentChallengeIndex = challenges.indexOf(type);
+      menu.style.display = 'none';
+      dot.style.display = 'block';
+      message.textContent = 'Keep your eyes on the dot!';
+      reward.style.display = 'none';
+      navButtons.style.display = 'none';
+      timer = 0;
+      angle = 0;
+
+      clearInterval(interval);
+      interval = setInterval(() => {
+        timer++;
+        if (timer >= 30) {
+          clearInterval(interval);
+          dot.style.display = 'none';
+          message.textContent = '';
+          reward.textContent = getRewardText(type);
+          reward.style.display = 'block';
+          navButtons.style.display = 'block';
+        } else {
+          moveDot(type);
+        }
+      }, 1000);
+    }
+
+    function moveDot(type) {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      if (type === 'vertical') {
+        dot.style.left = `${w / 2}px`;
+        dot.style.top = `${Math.random() * (h - 40)}px`;
+      } else if (type === 'horizontal') {
+        dot.style.left = `${Math.random() * (w - 40)}px`;
+        dot.style.top = `${h / 2}px`;
+      } else if (type === 'circle') {
+        const radius = Math.min(w, h) / 4;
+        const x = w / 2 + radius * Math.cos(angle);
+        const y = h / 2 + radius * Math.sin(angle);
+        dot.style.left = `${x}px`;
+        dot.style.top = `${y}px`;
+        angle += Math.PI / 15;
+      } else if (type === 'blink') {
+        dot.style.left = `${Math.random() * (w - 40)}px`;
+        dot.style.top = `${Math.random() * (h - 40)}px`;
+        message.textContent = 'Blink now! 👁️👁️';
+      } else if (type === 'focus') {
+        const x = Math.random() < 0.5 ? w / 2 : Math.random() * (w - 40);
+        const y = Math.random() < 0.5 ? h / 2 : Math.random() * (h - 40);
+        dot.style.left = `${x}px`;
+        dot.style.top = `${y}px`;
+      }
+    }
+
+    function showMenu() {
+      reward.style.display = 'none';
+      navButtons.style.display = 'none';
+      menu.style.display = 'block';
+    }
+
+    function nextChallenge() {
+      reward.style.display = 'none';
+      navButtons.style.display = 'none';
+      const nextIndex = (currentChallengeIndex + 1) % challenges.length;
+      startChallenge(challenges[nextIndex]);
+    }
+
+    function getRewardText(type) {
+      const rewards = {
+        vertical: "Great vertical focus! 👏 You're leveling up your eye power!",
+        horizontal: "Awesome side tracking! 🔥 Your eyes are super sharp!",
+        circle: "You nailed the circle! 🌀 Your eyes are strong and steady!",
+        blink: "Nice blinking break! ✨ Keep your eyes fresh!",
+        focus: "Fantastic focus shift! 🎯 You're mastering eye control!"
+      };
+      return rewards[type] || "Well done! 🎉 Keep going!";
+    }
+  </script>
 </body>
 </html>
