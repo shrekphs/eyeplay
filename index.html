@@ -60,8 +60,11 @@
     }
   </style>
 </head>
-<body>
-  <div id="menu">
+<audio id="reward-sound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_1c970f45cd.mp3" preload="auto"></audio>
+<audio id="start-sound" src="https://cdn.pixabay.com/audio/2022/08/24/audio_cb2979e2e1.mp3" preload="auto"></audio>
+<audio id="bg-music" src="https://cdn.pixabay.com/audio/2022/03/01/audio_c0b29192b5.mp3" preload="auto" loop></audio>
+
+<div id="menu">
     <h1>🎯 EyePlay Challenges</h1>
     <p>Select a Challenge:</p>
     <button onclick="startChallenge('vertical')">⬆️ Vertical Vision</button>
@@ -80,20 +83,39 @@
   <div id="dot"></div>
 
   <script>
+    // Initialize all DOM elements and global variables
+    // Dot element that moves on screen
+    // Similar to declaring variables like 'int x = 0;' in C++
     const dot = document.getElementById('dot');
+    // Menu section with challenge buttons
     const menu = document.getElementById('menu');
+    // Message text displayed during challenges
     const message = document.getElementById('message');
+    // Reward text shown after each challenge
     const reward = document.getElementById('reward');
+    // Navigation buttons (Back to Menu / Next Challenge)
     const navButtons = document.getElementById('nav-buttons');
 
+    // Timer variable used like an integer counter in C++
     let timer = 0;
+    // Similar to a pointer or time tracking variable in C++
     let interval;
+    // Used to calculate positions with trigonometry, like using float angle = 0.0; in C++
     let angle = 0;
+    // Index variable like 'int i = 0;' used for tracking the current position in the array
     let currentChallengeIndex = 0;
 
+    // This is like a string array in C++: string challenges[] = {"vertical", "horizontal", ...};
     const challenges = ['vertical', 'horizontal', 'circle', 'blink', 'focus'];
 
+    // Starts the selected eye challenge and plays audio
     function startChallenge(type) {
+      document.getElementById('bg-music').play();
+      document.getElementById('start-sound').play();
+      // Request fullscreen if not already in fullscreen
+      if (document.fullscreenEnabled && !document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => console.warn('Fullscreen failed:', err));
+      }
       currentChallengeIndex = challenges.indexOf(type);
       menu.style.display = 'none';
       dot.style.display = 'block';
@@ -104,6 +126,8 @@
       angle = 0;
 
       clearInterval(interval);
+      // Interval to move the dot every second for 30 seconds
+        // Like a for-loop or while-loop in C++ that repeats actions based on time
       interval = setInterval(() => {
         timer++;
         if (timer >= 30) {
@@ -111,6 +135,7 @@
           dot.style.display = 'none';
           message.textContent = '';
           reward.textContent = getRewardText(type);
+          document.getElementById('reward-sound').play();
           reward.style.display = 'block';
           navButtons.style.display = 'block';
         } else {
@@ -119,7 +144,10 @@
       }, 1000);
     }
 
+    // Moves the dot based on the selected challenge pattern
+    // Uses if-else conditionals like in C++ to control flow based on user choice
     function moveDot(type) {
+      // Get screen width and height, similar to reading values into variables
       const w = window.innerWidth;
       const h = window.innerHeight;
       if (type === 'vertical') {
@@ -129,6 +157,7 @@
         dot.style.left = `${Math.random() * (w - 40)}px`;
         dot.style.top = `${h / 2}px`;
       } else if (type === 'circle') {
+        // Using math functions (like sqrt, sin, cos in C++) for movement
         const radius = Math.min(w, h) / 4;
         const x = w / 2 + radius * Math.cos(angle);
         const y = h / 2 + radius * Math.sin(angle);
@@ -147,12 +176,16 @@
       }
     }
 
+    // Returns to the main menu and stops background music
     function showMenu() {
+      document.getElementById('bg-music').pause();
+      document.getElementById('bg-music').currentTime = 0;
       reward.style.display = 'none';
       navButtons.style.display = 'none';
       menu.style.display = 'block';
     }
 
+    // Automatically moves to the next challenge in the list
     function nextChallenge() {
       reward.style.display = 'none';
       navButtons.style.display = 'none';
@@ -160,6 +193,9 @@
       startChallenge(challenges[nextIndex]);
     }
 
+    // Returns a fun and motivational message based on the challenge type
+    // Function that returns a string, similar to:
+    // string getRewardText(string type) in C++
     function getRewardText(type) {
       const rewards = {
         vertical: "Great vertical focus! 👏 You're leveling up your eye power!",
