@@ -1,133 +1,47 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>EyePlay Adventure – Save the Vision World!</title>
+  <title>EyePlay – Vision Fun!</title>
   <style>
     body {
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-      background: linear-gradient(to right, #dbeafe, #fef9c3);
+      font-family: 'Segoe UI', sans-serif;
+      background: #e0f7fa;
       text-align: center;
-      padding: 20px;
-      color: #333;
+      padding: 50px;
     }
-    .game-box {
-      background-color: #fff;
-      border-radius: 20px;
-      padding: 30px;
-      max-width: 900px;
-      margin: auto;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-    }
-    .btn {
-      background-color: #ff9800;
-      color: white;
-      padding: 15px 30px;
-      margin: 10px;
-      border: none;
-      border-radius: 15px;
-      font-size: 18px;
-      cursor: pointer;
-    }
-    .hero-select, .monster, .rewards {
-      margin: 20px 0;
-    }
-    .xp-bar {
-      background: #ccc;
-      border-radius: 10px;
-      width: 100%;
-      height: 20px;
-      margin-top: 10px;
-      overflow: hidden;
-    }
-    .xp-fill {
-      height: 100%;
-      width: 30%;
-      background: #4caf50;
-      transition: width 0.5s;
+    #dot {
+      width: 50px;
+      height: 50px;
+      background: red;
+      border-radius: 50%;
+      position: absolute;
     }
   </style>
 </head>
 <body>
-  <div class="game-box">
-    <h1>👁️ EyePlay Adventure – Save the Vision World!</h1>
-
-    <div class="hero-select">
-      <h2>Choose Your Eye Hero:</h2>
-      <button class="btn" onclick="selectHero('Blinker')">🦸‍♂️ Blinker</button>
-      <button class="btn" onclick="selectHero('Focus Girl')">🦸‍♀️ Focus Girl</button>
-      <p id="hero-chosen"></p>
-    </div>
-
-    <div class="monster">
-      <h2>⚡ Escape from Zoomzilla!</h2>
-      <img src="zoomzilla.gif" alt="Zoomzilla Monster" style="max-width: 100%; height: auto;" />
-      <p>⬆️⬇️ Look up and down to escape Zoomzilla!</p>
-      <button class="btn" onclick="simulatePlay()">Play Now</button>
-    </div>
-
-    <div class="rewards">
-      <h2>🎁 Daily Reward</h2>
-      <p id="reward-msg">Checking your streak...</p>
-    </div>
-
-    <div class="xp-tracker">
-      <h2>XP Level</h2>
-      <div class="xp-bar">
-        <div class="xp-fill" id="xp-fill"></div>
-      </div>
-      <p id="xp-level">Level 1 – Keep Playing!</p>
-    </div>
-  </div>
-
-  <audio id="powerup-sound" src="https://www.soundjay.com/button/sounds/button-29.mp3"></audio>
-  <audio id="monster-growl" src="https://www.soundjay.com/human/sounds/boo-01.mp3"></audio>
+  <h1>Follow the Dot!</h1>
+  <p>Try moving your eyes to follow the dot for 30 seconds!</p>
+  <div id="dot"></div>
 
   <script>
-    let currentHero = '';
-    let xp = 30;
+    const dot = document.getElementById('dot');
+    let time = 0;
 
-    function selectHero(hero) {
-      currentHero = hero;
-      document.getElementById("hero-chosen").innerText = `✅ You selected: ${hero}!`;
+    function moveDot() {
+      const x = Math.random() * (window.innerWidth - 50);
+      const y = Math.random() * (window.innerHeight - 50);
+      dot.style.left = `${x}px`;
+      dot.style.top = `${y}px`;
     }
 
-    function simulatePlay() {
-      xp += 10;
-      document.getElementById("xp-fill").style.width = xp + "%";
-      document.getElementById("xp-level").innerText = `Level ${Math.floor(xp / 25)} – Awesome job, ${currentHero || "Hero"}!`;
-      document.getElementById("powerup-sound").play();
-    }
-
-    // 🎁 Daily Reward Logic
-    const rewardMsg = document.getElementById("reward-msg");
-    const today = new Date().toDateString();
-    const lastPlay = localStorage.getItem("lastPlay");
-    let streak = parseInt(localStorage.getItem("streak") || "0");
-
-    if (lastPlay !== today) {
-      streak += 1;
-      localStorage.setItem("streak", streak);
-      localStorage.setItem("lastPlay", today);
-      rewardMsg.innerText = `🎉 Day ${streak} streak! You earned +20 XP!`;
-      xp += 20;
-      document.getElementById("xp-fill").style.width = xp + "%";
-    } else {
-      rewardMsg.innerText = `✅ Already claimed today's reward! You're on Day ${streak}.`;
-    }
-
-    // 🧠 Eye Movement Detection (Mock for Desktop – replace with AR later)
-    if (window.DeviceOrientationEvent) {
-      window.addEventListener('deviceorientation', function(event) {
-        const tilt = event.beta;
-        if (tilt > 30 || tilt < -30) {
-          document.getElementById("monster-growl").play();
-          simulatePlay();
-        }
-      });
-    }
+    setInterval(() => {
+      moveDot();
+      time += 1;
+      if (time > 30) {
+        alert("Good job! Your eyes got a workout!");
+        time = 0;
+      }
+    }, 1000);
   </script>
 </body>
 </html>
